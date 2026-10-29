@@ -150,3 +150,31 @@ def dfs(problem, trace=False):
                   f"{[n[0] for n in frontier]}")
     return _result("NO_SOLUTION", None, expanded, max_frontier,
                    time.perf_counter() - t0)
+
+def generate_and_test(problem, trace=False):
+    t0 = time.perf_counter()
+    tested = 0
+    for length in range(1, problem.gt_max_length + 1):
+        for seq in product(problem.operator_order, repeat=length):
+            if tested >= problem.max_expansions:
+                return _result("LIMIT_REACHED", None, tested, 0,
+                               time.perf_counter() - t0)
+            tested += 1
+            state, chain = problem.start, [(None, problem.start)]
+            for op in seq:
+                state = apply_op(state, op, problem.cap_a, problem.cap_b)
+                chain.append((op, state))
+            ok = is_goal(state, problem)
+            if trace:
+                print(f"  [{tested:>6}] uji {list(seq)} -> {state} "
+                      f"{'GOAL' if ok else 'bukan goal'}")
+            if ok:
+                res = _result("SOLUTION", None, tested, 0,
+                              time.perf_counter() - t0)
+                res["path"], res["steps"], res["cost"] = chain, length, length
+                return res
+    # semua kandidat s.d. gt_max_length habis diuji tanpa hasil
+    return _result("LIMIT_REACHED", None, tested, 0, time.perf_counter() - t0)
+
+
+ALGORITHMS = {"bfs": bfs, "dfs": dfs, "gt": generate_and_test}

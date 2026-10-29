@@ -1,0 +1,10 @@
+{
+  "capacity_a": 4,
+  "capacity_b": 3,
+  "target": 2,
+  "start": [0, 0],
+  "goal_mode": "either",
+  "operator_order": ["fill_a", "fill_b", "empty_a", "empty_b", "pour_a_b", "pour_b_a"],
+  "use_visited": false,
+  "max_expansions": 20000
+}
